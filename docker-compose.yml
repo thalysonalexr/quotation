@@ -1,0 +1,35 @@
+version: '3.8'
+
+networks:
+  quotation-network:
+    driver: bridge
+
+services:
+  quotation-redis:
+    image: bitnami/redis:latest
+    user: root
+    container_name: quotation-redis
+    ports:
+      - "${REDIS_PORT}:${REDIS_PORT}"
+    environment:
+      - ALLOW_EMPTY_PASSWORD=${REDIS_ALLOW_EMPTY_PASSWORD}
+      - REDIS_REPLICATION_MODE=${REDIS_REPLICATION_MODE}
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+    volumes:
+      - ./redis:/bitnami
+    networks:
+      - quotation-network
+
+  quotation-workerui:
+    restart: always
+    environment:
+      - REDIS_HOSTS=redis://:${REDIS_PASSWORD}@quotation-redis:${REDIS_PORT}
+    build:
+      context: .
+      dockerfile: Dockerfile.worker
+    ports:
+      - "8181:8181"
+    networks:
+      - quotation-network
+    depends_on:
+      - quotation-redis

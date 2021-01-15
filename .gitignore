@@ -1,0 +1,7 @@
+vendor
+.env
+
+redis/*
+!redis/.gitkeep
+tmp/*
+!tmp/.gitkeep
