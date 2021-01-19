@@ -18,7 +18,12 @@ type Context struct{}
 
 func (c *Context) getQuotation(job *work.Job) error {
 	color.Yellow("Init job " + job.Name + ":" + job.ID)
-	if err := quotation.RunQuotation(); err != nil {
+	path, err := os.Getwd()
+	if err != nil {
+		color.Red(err.Error())
+		return err
+	}
+	if err := quotation.RunQuotation(path + "/tmp"); err != nil {
 		color.Red(err.Error())
 		return err
 	}

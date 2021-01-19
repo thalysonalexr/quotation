@@ -36,27 +36,27 @@ type Response struct {
 	Options []Quotation `json:"Options"`
 }
 
-// NewQuotationResponse create new quotation json data
+// NewQuotationResponse create new quotation from json data
 func NewQuotationResponse(data []byte) (*Response, error) {
 	q := Response{}
 	err := json.Unmarshal([]byte(string(data)), &q)
 	return &q, err
 }
 
-// GetDescriptionKeys get array string description fields
+// GetDescriptionKeys get array string description fields (columns)
 func GetDescriptionKeys() *[]string {
 	descriptions := []string{
-		"Cod empresa",      // Symbol - ok
-		"Pre de exercicio", // PutOrCall 1 == call 0 else put - ok
-		"Cotacao",          // StrikePrice - ok
-		"Variacao",         // Price - ok
-		"Vol negociado",    // VarDay - ok
-		"N de negocios",    // Volume - ok
-		"Data/hora",        // Trades - ok
-		"Vencimento",       // LastTradeTime - ok
-		"Modelo",           // MaturityDate - ok
-		"Nome da acao",     // ExerciseStyle 1 == EU else US - ok
-		"Cotacao da acao",  // StockCode - ok
+		"Cod empresa",      // Symbol
+		"Pre de exercicio", // PutOrCall 1 == call 0 else put
+		"Cotacao",          // StrikePrice
+		"Variacao",         // Price
+		"Vol negociado",    // VarDay
+		"N de negocios",    // Volume
+		"Data/hora",        // Trades
+		"Vencimento",       // LastTradeTime
+		"Modelo",           // MaturityDate
+		"Nome da acao",     // ExerciseStyle 1 == EU else US
+		"Cotacao da acao",  // StockCode
 	}
 	return &descriptions
 }

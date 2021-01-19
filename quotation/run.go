@@ -1,7 +1,9 @@
 package quotation
 
 import (
+	"fmt"
 	"log"
+	"math/rand"
 	"os"
 	"path/filepath"
 	"time"
@@ -10,7 +12,7 @@ import (
 	"github.com/fatih/color"
 )
 
-func saveDataCSV(quotations *[]Quotation) error {
+func saveDataCSV(quotations *[]Quotation, dir string) error {
 	var lines [][]string
 	ini := time.Now()
 	bar := pb.Full.Start(len(*quotations))
@@ -22,14 +24,15 @@ func saveDataCSV(quotations *[]Quotation) error {
 		lines = append(lines, *line)
 		bar.Increment()
 	}
+	var err error
+	path := os.Getenv("PATH_SAVE_FILES")
+	file := NewFilenameWithDate("quotation", "csv")
 
-	filename := newFilenameWithDate("quotation") + ".csv"
-	currentDir, err := os.Getwd()
-	if err != nil {
-		log.Fatalln(err)
+	if path == "" {
+		path = dir
 	}
 
-	err = ExportCsv(lines, filepath.FromSlash(currentDir+"/tmp/"+filename))
+	err = ExportCsv(lines, filepath.FromSlash(path+"/"+file))
 	if err != nil {
 		return err
 	}
@@ -40,7 +43,8 @@ func saveDataCSV(quotations *[]Quotation) error {
 }
 
 // RunQuotation run process of download and export quotation to csv
-func RunQuotation() error {
+func RunQuotation(dir string) error {
+	const max, min = 100, 50
 	q, err := getQuotationOptionsTableNonce()
 	if err != nil {
 		log.Fatalln(err)
@@ -48,7 +52,7 @@ func RunQuotation() error {
 
 	var page int = 1
 	var quotations []Quotation
-	bar := pb.Full.Start(50)
+	bar := pb.Full.Start(rand.Intn(max - min))
 
 	for {
 		data, err := GetQuotation(q.AjaxURL, makeFormData(page, q.CotacoesOpcoesTableNonce))
@@ -68,9 +72,11 @@ func RunQuotation() error {
 		}
 		page++
 		quotations = append(quotations, unpack.Options...)
+		break
 	}
 
-	if err = saveDataCSV(&quotations); err != nil {
+	if err = saveDataCSV(&quotations, dir); err != nil {
+		fmt.Println(err.Error())
 		color.Red("Error to export data csv", err)
 		return err
 	}
