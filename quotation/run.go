@@ -72,7 +72,6 @@ func RunQuotation(dir string) error {
 		}
 		page++
 		quotations = append(quotations, unpack.Options...)
-		break
 	}
 
 	if err = saveDataCSV(&quotations, dir); err != nil {
