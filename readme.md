@@ -33,11 +33,11 @@ $ go run cmd/main.go
 Ou você pode gerar o executável do projeto para o seu OS caso prefira, fazendo:
 ```bash
 # gerando executável para modo de trabalhos (jobs)
-$ GOOS={seu-sistema} go build . -o quotation-jobs
+$ GOOS={seu-sistema} go build .
 # gerando executável para ui http
-$ GOOS={seu-sistema} go run http/main.go -o quotation-http
+$ GOOS={seu-sistema} go run http/main.go
 # gerando executável para ui cmd
-$ GOOS={seu-sistema} go run cmd/main.go -o quotation-cmd
+$ GOOS={seu-sistema} go run cmd/main.go
 ```
 
 Você também pode passar a arquitetura para gerar o executável, por exemplo `GOARCH=ppc64`.
@@ -83,7 +83,7 @@ $ ./quotation-cmd /meu/diretorio/pra/salvar/os/arquivos
 ```
 
 ### Jobs
-Você pode executar o download manualmente via linha de comando, executando:
+Com redis rodando, você poderá executar os jobs:
 ```bash
 $ go run . /meu/diretorio/pra/salvar/os/arquivos
 # ou, no caso de um executavel
