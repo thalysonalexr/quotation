@@ -5,6 +5,19 @@ networks:
     driver: bridge
 
 services:
+  quotation-job:
+    build:
+      context: .
+      dockerfile: ./Dockerfile.job
+    volumes:
+      - .:/app
+    depends_on:
+      - quotation-redis
+    links:
+      - quotation-redis
+    networks:
+      - quotation-network
+
   quotation-redis:
     image: bitnami/redis:latest
     user: root
@@ -19,17 +32,3 @@ services:
       - ./redis:/bitnami
     networks:
       - quotation-network
-
-  quotation-workerui:
-    restart: always
-    environment:
-      - REDIS_HOSTS=redis://:${REDIS_PASSWORD}@quotation-redis:${REDIS_PORT}
-    build:
-      context: .
-      dockerfile: Dockerfile.worker
-    ports:
-      - "8181:8181"
-    networks:
-      - quotation-network
-    depends_on:
-      - quotation-redis

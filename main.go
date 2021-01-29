@@ -5,30 +5,13 @@ import (
 	"os"
 	"os/signal"
 
-	"github.com/gocraft/work"
 	"github.com/joho/godotenv"
+	cron "github.com/lovego/redis-cron"
 
 	"quotation/quotation"
 
 	"github.com/fatih/color"
 )
-
-// Context job
-type Context struct{}
-
-func (c *Context) getQuotation(job *work.Job) error {
-	color.Yellow("Init job " + job.Name + ":" + job.ID)
-	path, err := os.Getwd()
-	if err != nil {
-		color.Red(err.Error())
-		return err
-	}
-	if err := quotation.RunQuotation(path + "/tmp"); err != nil {
-		color.Red(err.Error())
-		return err
-	}
-	return nil
-}
 
 func main() {
 	err := godotenv.Load()
@@ -37,15 +20,24 @@ func main() {
 	}
 
 	pool := quotation.ConfigRedis()
-	wp := work.NewWorkerPool(Context{}, 1, "quotation_workspace", pool)
-	wp.PeriodicallyEnqueue(os.Getenv("CRON_DESCRIPTOR"), "get_quotation")
-	wp.Job("get_quotation", (*Context).getQuotation)
-	color.Green("Init process to get quotation, please waiting...")
-	wp.Start()
+	c := cron.New(pool)
+
+	c.AddFunc(os.Getenv("CRON_DESCRIPTOR"), func() {
+		color.Yellow("Init job func getQuotation")
+		path, err := os.Getwd()
+		if err != nil {
+			color.Red(err.Error())
+		} else if err := quotation.RunQuotation(path + "/tmp"); err != nil {
+			color.Red(err.Error())
+		}
+	})
+
+	c.Start()
+	color.Green("Init process to get quotation, please waiting job run...")
 
 	signalChan := make(chan os.Signal, 1)
 	signal.Notify(signalChan, os.Interrupt, os.Kill)
 	<-signalChan
 
-	wp.Stop()
+	c.Stop()
 }

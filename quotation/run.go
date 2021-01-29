@@ -66,6 +66,7 @@ func RunQuotation(dir string) error {
 			break
 		}
 		color.Green("Request of page {%d} with sucessfully", page)
+		CallClear()
 		if !unpack.HasMore {
 			color.Yellow("No more pages to request")
 			break

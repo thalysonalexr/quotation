@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/fatih/color"
-	"github.com/gomodule/redigo/redis"
+	"github.com/garyburd/redigo/redis"
 )
 
 // ConfigRedis configurate redis pool
@@ -20,8 +20,7 @@ func ConfigRedis() *redis.Pool {
 				"tcp",
 				os.Getenv("REDIS_HOST")+":"+os.Getenv("REDIS_PORT"),
 				redis.DialPassword(os.Getenv("REDIS_PASSWORD")),
-				redis.DialClientName("quotation"),
-				redis.DialConnectTimeout(time.Millisecond*8),
+				redis.DialConnectTimeout(time.Second*30),
 			)
 			if err != nil {
 				color.Red(ErrClientRedisFailedConnection.Error())
