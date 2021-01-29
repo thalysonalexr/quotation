@@ -1,10 +1,7 @@
 package main
 
 import (
-	"log"
 	"os"
-
-	"github.com/joho/godotenv"
 
 	"quotation/quotation"
 
@@ -27,11 +24,6 @@ func getQuotation() error {
 }
 
 func main() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatalln(err)
-	}
-
 	s := gocron.NewScheduler()
 	s.Every(5).Minutes().Do(getQuotation)
 	<-s.Start()
